@@ -54,7 +54,7 @@ public class MoverObjetos : MonoBehaviour
                     });
                 });
             }
-            //comprobar si la animacion ha finalizado para que vuelva a comenzar
+            //comprobar si la animacion ha finalizado para que vuelva a comenzar (Me ayudo con un bug, haciendo que se sincronice la animacion en ambos ejes
             if (laPrimeraEstaX == true && laPrimeraEstaZ == true)
             {
                 laPrimeraEstaX = false;
