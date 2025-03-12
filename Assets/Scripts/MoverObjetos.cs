@@ -13,9 +13,9 @@ public class MoverObjetos : MonoBehaviour
     public bool sePuedeEscalar = false;
     public bool seEstaEscalando = false;
     private GameObject objetoParaEscalar = null; // El objeto cuya escala queremos modificar
-    public float scaleSpeed = 4f; // Velocidad de cambio de escala
+    public float scaleSpeed = 1f; // Velocidad de cambio de escala
     public Vector3 minScale = new Vector3(0.5f, 0.5f, 0.5f); // Escala mínima
-    public Vector3 maxScale = new Vector3(6f, 6f, 6f); // Escala máxima
+    public Vector3 maxScale = new Vector3(2f, 2f, 2f); // Escala máxima
 
     private Vector3 previousMousePosition;
 
@@ -99,16 +99,13 @@ public class MoverObjetos : MonoBehaviour
                 // Calcular el cambio en el eje Y
                 float mouseDeltaY = currentMousePosition.y - previousMousePosition.y;
 
-                // Actualizar la posición del mouse
-                previousMousePosition = currentMousePosition;
-
                 // Ajustar la escala del objeto basado en el cambio en Y
                 if (mouseDeltaY != 0)
                 {
                     Vector3 newScale = objetoParaEscalar.transform.localScale;
 
                     // Modificar la escala proporcionalmente al movimiento del mouse
-                    newScale += (Vector3.one * mouseDeltaY * scaleSpeed) * Time.deltaTime;
+                    newScale += (Vector3.one * mouseDeltaY * scaleSpeed) * 8 * Time.deltaTime;
 
                     // Limitar la escala al rango definido
                     newScale = new Vector3(
@@ -120,6 +117,9 @@ public class MoverObjetos : MonoBehaviour
                     // Aplicar la nueva escala
                     objetoParaEscalar.transform.localScale = newScale;
                 }
+
+                // Actualizar la posición del mouse
+                previousMousePosition = currentMousePosition;
 
                 if (Input.GetMouseButtonUp(0))
                 {
