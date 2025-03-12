@@ -12,9 +12,8 @@ public class MoverObjetos : MonoBehaviour
     //escalar objeto
     public bool sePuedeEscalar = false;
     public bool seEstaEscalando = false;
-    public bool yaEscalo = false;
     private GameObject objetoParaEscalar = null; // El objeto cuya escala queremos modificar
-    public float scaleSpeed = 1f; // Velocidad de cambio de escala
+    public float scaleSpeed = 4f; // Velocidad de cambio de escala
     public Vector3 minScale = new Vector3(0.5f, 0.5f, 0.5f); // Escala mínima
     public Vector3 maxScale = new Vector3(6f, 6f, 6f); // Escala máxima
 
@@ -32,39 +31,40 @@ public class MoverObjetos : MonoBehaviour
 
     void Update()
     {
-        if (circulito.activeSelf)
-        {
-            //movimiento del circulito azul
-            
-            if (sePuedeRepetir == true)
-            {
-                sePuedeRepetir = false;
-                LeanTween.scaleX(circulito, 1f, 1f).setEase(LeanTweenType.easeInOutQuad).setOnComplete(() =>
-                {
-                    LeanTween.scaleX(circulito, 2f, 1f).setEase(LeanTweenType.easeInOutQuad).setOnComplete(() =>
-                    {
-                        laPrimeraEstaX = true;
-                    });
-                });
-                LeanTween.scaleZ(circulito, 1f, 1f).setEase(LeanTweenType.easeInOutQuad).setOnComplete(() =>
-                {
-                    LeanTween.scaleZ(circulito, 2f, 1f).setEase(LeanTweenType.easeInOutQuad).setOnComplete(() =>
-                    {
-                        laPrimeraEstaZ = true;
-                    });
-                });
-            }
-            //comprobar si la animacion ha finalizado para que vuelva a comenzar
-            if (laPrimeraEstaX == true && laPrimeraEstaZ == true)
-            {
-                laPrimeraEstaX = false;
-                laPrimeraEstaZ = false;
-                sePuedeRepetir = true;
-            }
-        }
-       
+
         if (modoMover == true)
-        {
+        {   
+            //Animacion del circulo
+            if (circulito.activeSelf)
+            {
+                //movimiento del circulito azul
+
+                if (sePuedeRepetir == true)
+                {
+                    sePuedeRepetir = false;
+                    LeanTween.scaleX(circulito, 1f, 1f).setEase(LeanTweenType.easeInOutQuad).setOnComplete(() =>
+                    {
+                        LeanTween.scaleX(circulito, 2f, 1f).setEase(LeanTweenType.easeInOutQuad).setOnComplete(() =>
+                        {
+                            laPrimeraEstaX = true;
+                        });
+                    });
+                    LeanTween.scaleZ(circulito, 1f, 1f).setEase(LeanTweenType.easeInOutQuad).setOnComplete(() =>
+                    {
+                        LeanTween.scaleZ(circulito, 2f, 1f).setEase(LeanTweenType.easeInOutQuad).setOnComplete(() =>
+                        {
+                            laPrimeraEstaZ = true;
+                        });
+                    });
+                }
+                //comprobar si la animacion ha finalizado para que vuelva a comenzar
+                if (laPrimeraEstaX == true && laPrimeraEstaZ == true)
+                {
+                    laPrimeraEstaX = false;
+                    laPrimeraEstaZ = false;
+                    sePuedeRepetir = true;
+                }
+            }
             // Si el modoMover está activo y hay un objeto seleccionado, se puede mover
             if (objetoSeleccionado != null && siguiendoCursor)
             {
@@ -99,13 +99,16 @@ public class MoverObjetos : MonoBehaviour
                 // Calcular el cambio en el eje Y
                 float mouseDeltaY = currentMousePosition.y - previousMousePosition.y;
 
+                // Actualizar la posición del mouse
+                previousMousePosition = currentMousePosition;
+
                 // Ajustar la escala del objeto basado en el cambio en Y
                 if (mouseDeltaY != 0)
                 {
                     Vector3 newScale = objetoParaEscalar.transform.localScale;
 
                     // Modificar la escala proporcionalmente al movimiento del mouse
-                    newScale += Vector3.one * mouseDeltaY * scaleSpeed * Time.deltaTime;
+                    newScale += (Vector3.one * mouseDeltaY * scaleSpeed) * Time.deltaTime;
 
                     // Limitar la escala al rango definido
                     newScale = new Vector3(
@@ -117,16 +120,10 @@ public class MoverObjetos : MonoBehaviour
                     // Aplicar la nueva escala
                     objetoParaEscalar.transform.localScale = newScale;
                 }
+
                 if (Input.GetMouseButtonUp(0))
                 {
-                    yaEscalo = true;
-                }
-                // Actualizar la posición del mouse
-                previousMousePosition = currentMousePosition;
-                if (Input.GetMouseButtonDown(0) && yaEscalo == true)
-                {
                     seEstaEscalando = false;
-                    yaEscalo = false;
                 }
             }
         }
@@ -141,7 +138,7 @@ public class MoverObjetos : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
-        if (Physics.Raycast(ray, out hit))
+        if (Physics.Raycast(ray, out hit) && (modoMover == true))
         {
             // Mueve el objeto a la posición donde golpea el rayo
             objetoSeleccionado.transform.position = hit.point;
@@ -181,7 +178,6 @@ public class MoverObjetos : MonoBehaviour
                 objetoParaEscalar = hit.collider.gameObject;
                 seEstaEscalando = true;
             }
-            circulito.transform.position = hit.point;
         }
     }
         
@@ -217,7 +213,6 @@ public class MoverObjetos : MonoBehaviour
     {
         DesactivarModoMover();
         sePuedeEscalar = true;
-        yaEscalo = false;
         seEstaEscalando = false;
     }
     public void DesactivarModoEscalar()
